@@ -1,0 +1,48 @@
+spec_version: 2
+description: EKS dev-ready cluster with additional services, such as prometheus, istio, ELK and more.
+
+inputs:
+  cluster-name:
+    type: string
+    default: dev-cluster
+  role_arn:
+    type: string
+    default: 'REPLACEME'
+    # default: 'arn:aws:iam::<account>:role/<role-name>'
+  role_username:
+    type: string
+    default: 'QualiPowerUsers'
+    # default: '<role-name>'
+
+outputs:
+  update-kubeconfig:
+    value: 'aws eks update-kubeconfig --region eu-central-1 --name {{ .inputs.cluster-name }}'
+    kind: regular
+    
+grains:
+  dev-cluster:
+    kind: terraform
+    spec:
+      source:
+        store: REPLACEME
+        path: REPLACEME
+      agent:
+        name: reply-agent-new
+        service-account: app-sa
+      inputs:
+      - account: REPLACEME
+      - cluster-name: '{{ .inputs.cluster-name }}'
+      - elk: false
+      - fluentd: false
+      - istio: false
+      - prometheus: false
+      - region: eu-central-1
+      - role_arn: '{{ .inputs.role_arn }}'
+      - role_username: '{{ .inputs.role_username }}'
+      # The environment variables declared in this section will be available during the grain deployment as well as the grain destroy phase
+      # env-vars:
+      # - VAR_NAME: var value
+      env-vars: []
+      outputs: []
+    # The terraform version that will be used to deploy the module
+    tf-version: 1.3.2
